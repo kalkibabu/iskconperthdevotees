@@ -1,0 +1,987 @@
+<head>
+  <meta charset="UTF-8" />
+  <title>Perth Initiated Devotee List</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- SheetJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-image: url('https://iskconnewtown.com/wp-content/uploads/2024/02/nitai-gauranga-iskconnewtown-kolkata-6.jpeg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    header {
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      padding: 15px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .view-switch button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      background: #f6e58d;
+      margin-left: 8px;
+    }
+
+    .view-switch button.active {
+      background: #e17055;
+      color: #fff;
+    }
+
+    main { padding: 25px; }
+
+    .card {
+      background: rgba(255,255,255,0.92);
+      border-radius: 14px;
+      padding: 22px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .card#adminView {
+      max-width: 100%;
+      width: 100%;
+    }
+
+    .hidden { display: none; }
+
+    .form-section-title {
+      font-size: 18px;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: #e67e22;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .form-group {
+      flex: 1 1 260px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    input, select {
+      padding: 7px 9px;
+      border-radius: 6px;
+      border: 1px solid #b2bec3;
+      background: #fffdf8;
+    }
+
+    .submit-row {
+      margin-top: 20px;
+      text-align: right;
+    }
+
+    .submit-row button {
+      padding: 9px 18px;
+      border-radius: 20px;
+      border: none;
+      background: #e17055;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .error {
+      color: red;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .admin-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .admin-controls button {
+      padding: 7px 14px;
+      border-radius: 18px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      background: #fab1a0;
+      color: #2d3436;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+      font-size: 13px;
+      table-layout: fixed;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid #dfe6e9;
+      vertical-align: top;
+      word-wrap: break-word;
+      white-space: normal;
+      overflow-wrap: break-word;
+      max-width: 180px;
+      min-width: 100px;
+    }
+
+    th {
+      background: #e67e22;
+      color: #fff;
+    }
+
+    .country-select {
+      position: relative;
+      width: 120px;
+    }
+
+    .country-select input {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 6px;
+      border: 1px solid #b2bec3;
+      background: #fffdf8;
+      cursor: pointer;
+    }
+
+    .country-options {
+      position: absolute;
+      top: 38px;
+      left: 0;
+      width: 100%;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      max-height: 180px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+
+    .country-option {
+      padding: 6px 10px;
+      cursor: pointer;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .flag {
+      font-size: 18px;
+    }
+
+    .modal-backdrop,
+    .admin-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal,
+    .admin-modal {
+      background: #fff;
+      padding: 20px 24px;
+      border-radius: 10px;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .modal button,
+    .admin-modal button {
+      margin-top: 12px;
+      padding: 7px 16px;
+      border-radius: 18px;
+      border: none;
+      background: #e17055;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .admin-modal input {
+      width: 100%;
+      margin-top: 8px;
+      padding: 7px 9px;
+      border-radius: 6px;
+      border: 1px solid #b2bec3;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Perth Initiated Devotee List</h1>
+  <div class="view-switch">
+    <button id="adminViewBtn">Admin View</button>
+    <button id="userViewBtn" class="active">User View</button>
+  </div>
+</header>
+
+<main>
+
+<div id="welcomeMessage" class="card" style="text-align:center; margin-bottom:20px;">
+  <img src="iskcon-logo.png"
+       alt="ISKCON Perth"
+       style="display:block; margin:0 auto 10px; max-width:180px;">
+  <h2 style="margin-bottom:0;">Welcome to ISKCON Perth</h2>
+</div>
+
+
+
+
+  <!-- ===================== ADMIN VIEW ===================== -->
+  <div id="adminView" class="card hidden">
+    <h2>Admin Dashboard</h2>
+
+<div class="admin-controls">
+  <button id="deleteSelectedBtn">Delete Selected</button>
+  <button id="exportAllCsvBtn">Export to .csv</button>
+  <button id="exportAllXlsxBtn">Export to .xlsx</button>
+  <button id="exportAllPdfBtn">Export to PDF</button>
+</div>
+<table id="devoteeTable">
+  <thead>
+    <tr>
+      <th></th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Full Name</th>
+      <th>Gender</th>
+      <th>DOB</th>
+      <th>Passport</th>
+      <th>Mobile</th>
+      <th>Family Head</th>
+      <th>Addr1</th>
+      <th>Addr2</th>
+      <th>City</th>
+      <th>State</th>
+      <th>Country</th>
+      <th>Are Initiated</th>
+      <th>Initiation Status</th>
+      <th>Place of Initiation</th>
+      <th>Initiation Date</th>
+      <th>Shiksha Guru</th>
+      <th>Diksha Guru</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+  </div>
+
+  <!-- ===================== USER VIEW ===================== -->
+  <div id="userView" class="card">
+    <h2>Dear Devotee, please fill the below details</h2>
+
+    <form id="devoteeForm">
+
+      <!-- PERSONAL DETAILS -->
+      <div class="form-section-title">Personal Details</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name *</label>
+          <input type="text" id="firstName">
+          <div class="error" id="firstNameError"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Last Name *</label>
+          <input type="text" id="lastName">
+          <div class="error" id="lastNameError"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="fullName">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Gender</label>
+          <select id="gender">
+            <option value="">Select</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Date of Birth *</label>
+          <input type="date" id="dob">
+          <div class="error" id="dobError"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Passport Number *</label>
+          <input type="text" id="passportNumber">
+          <div class="error" id="passportNumberError"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Mobile Number *</label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <div class="country-select">
+            <input type="text" id="countryCodeInput" placeholder="Code" readonly>
+            <div class="country-options" id="countryOptions">
+              <div class="country-option" data-code="+61">
+                <span class="flag">🇦🇺</span> +61 Australia
+              </div>
+              <div class="country-option" data-code="+91">
+                <span class="flag">🇮🇳</span> +91 India
+              </div>
+            </div>
+          </div>
+
+          <input type="text" id="mobileNumber" placeholder="Mobile" style="width:140px;">
+        </div>
+        <div class="error" id="mobileError"></div>
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="familyHead">
+        <label for="familyHead">Are you family head?</label>
+      </div>
+
+      <!-- ADDRESS -->
+      <div class="form-section-title">Current Address</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Address Line 1</label>
+          <input type="text" id="addrLine1">
+        </div>
+
+        <div class="form-group">
+          <label>Address Line 2</label>
+          <input type="text" id="addrLine2">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>City</label>
+          <input type="text" id="city">
+        </div>
+
+        <div class="form-group">
+          <label>State</label>
+          <input type="text" id="state">
+        </div>
+
+        <div class="form-group">
+          <label>Country</label>
+          <select id="country">
+            <option value="">Select</option>
+            <option value="Australia">🇦🇺 Australia</option>
+            <option value="India">🇮🇳 India</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- INITIATION DETAILS -->
+      <div class="form-section-title">Initiation Details</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Are you initiated?</label>
+          <select id="areInitiated">
+            <option value="">Select</option>
+            <option>YES</option>
+            <option>NO</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Initiation Status</label>
+          <select id="initiationStatus">
+            <option value="">Select</option>
+            <option>First</option>
+            <option>Second</option>
+            <option>No</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Place of Initiation</label>
+          <input type="text" id="placeOfInitiation">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date of Initiation</label>
+          <input type="date" id="initiationDate">
+        </div>
+
+        <div class="form-group">
+          <label>Shiksha Guru Name</label>
+          <input type="text" id="shikshaGuru">
+        </div>
+
+        <div class="form-group">
+          <label>Diksha Guru Name</label>
+          <input type="text" id="dikshaGuru">
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <button type="submit">Submit</button>
+        <button type="button" id="resetBtn" style="background:#777;">Reset</button>
+      </div>
+
+    </form>
+  </div>
+
+</main>
+
+<!-- SUCCESS MODAL -->
+<div id="successModalBackdrop" class="modal-backdrop">
+  <div class="modal">
+    <h3>Submitted successfully</h3>
+    <p>Thank you for entering your details.</p>
+    <button id="successCloseBtn">Close</button>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div id="adminModalBackdrop" class="admin-modal-backdrop">
+  <div class="admin-modal">
+    <h3>Admin Login</h3>
+    <input type="password" id="adminPasswordInput" placeholder="Enter password">
+    <div class="error" id="adminPasswordError"></div>
+    <button id="adminLoginBtn">Login</button>
+  </div>
+</div>
+<script>
+/* ============================================================
+   FIREBASE INITIALIZATION
+============================================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyDxJY7_VirTqoXMYbjjFzsHaAz-KSbQEj8",
+  authDomain: "bhakti-vriksha-2e295.firebaseapp.com",
+  databaseURL: "https://bhakti-vriksha-2e295-default-rtdb.firebaseio.com",
+  projectId: "bhakti-vriksha-2e295",
+  storageBucket: "bhakti-vriksha-2e295.appspot.com",
+  messagingSenderId: "159402779568",
+  appId: "1:159402779568:web:dc0c4a39a0c51d08dcac75",
+  measurementId: "G-5LKYY6YZBC"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+/* ============================================================
+   UNIFIED APPLICATION LOGIC
+============================================================ */
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* ------------------------------------------------------------
+     ELEMENT REFERENCES
+  ------------------------------------------------------------ */
+  const form = document.getElementById("devoteeForm");
+  const resetBtn = document.getElementById("resetBtn");
+  const successModalBackdrop = document.getElementById("successModalBackdrop");
+  const successCloseBtn = document.getElementById("successCloseBtn");
+
+  const adminBtn = document.getElementById("adminViewBtn");
+  const userBtn = document.getElementById("userViewBtn");
+  const adminView = document.getElementById("adminView");
+  const userView = document.getElementById("userView");
+  const welcomeMessage = document.getElementById("welcomeMessage");
+
+  const adminModalBackdrop = document.getElementById("adminModalBackdrop");
+  const adminPasswordInput = document.getElementById("adminPasswordInput");
+  const adminPasswordError = document.getElementById("adminPasswordError");
+  const adminLoginBtn = document.getElementById("adminLoginBtn");
+
+  const deleteSelectedBtn = document.getElementById("deleteSelectedBtn");
+  const exportAllCsvBtn = document.getElementById("exportAllCsvBtn");
+  const exportAllXlsxBtn = document.getElementById("exportAllXlsxBtn");
+  const exportAllPdfBtn = document.getElementById("exportAllPdfBtn");
+
+  const countryCodeInput = document.getElementById("countryCodeInput");
+  const countryOptions = document.getElementById("countryOptions");
+
+  const ADMIN_PASSWORD = "Kalamunda";
+
+  let devotees = [];
+  let devoteesKeys = [];
+
+  /* ------------------------------------------------------------
+     COUNTRY CODE DROPDOWN
+  ------------------------------------------------------------ */
+  if (countryCodeInput && countryOptions) {
+    countryCodeInput.onclick = () => {
+      countryOptions.style.display = "block";
+      countryCodeInput.value = "";
+    };
+
+    countryCodeInput.onkeyup = () => {
+      const filter = countryCodeInput.value.toLowerCase();
+      countryOptions.querySelectorAll(".country-option").forEach(opt => {
+        opt.style.display = opt.textContent.toLowerCase().includes(filter) ? "flex" : "none";
+      });
+    };
+
+    document.addEventListener("click", (e) => {
+      if (!countryCodeInput.contains(e.target) && !countryOptions.contains(e.target)) {
+        countryOptions.style.display = "none";
+      }
+    });
+
+    countryOptions.querySelectorAll(".country-option").forEach(opt => {
+      opt.onclick = () => {
+        countryCodeInput.value = opt.dataset.code;
+        countryOptions.style.display = "none";
+      };
+    });
+  }
+
+  /* ------------------------------------------------------------
+     MOBILE VALIDATION HELPERS
+  ------------------------------------------------------------ */
+  function formatAustralianMobile(num) {
+    let digits = num.replace(/\D/g, "");
+    if (digits.length === 9 && digits.startsWith("4")) digits = "0" + digits;
+    if (!digits.startsWith("04")) return null;
+    if (digits.length !== 10) return null;
+    return digits.replace(/(\d{4})(\d{3})(\d{3})/, "$1 $2 $3");
+  }
+
+  /* ------------------------------------------------------------
+     FORM SUBMISSION
+  ------------------------------------------------------------ */
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+
+    let valid = true;
+
+    const required = [
+      ["firstName", "First name is required"],
+      ["lastName", "Last name is required"],
+      ["dob", "Date of birth is required"],
+      ["passportNumber", "Passport number is required"]
+    ];
+
+    required.forEach(([id, msg]) => {
+      const input = document.getElementById(id);
+      const error = document.getElementById(id + "Error");
+      if (!input.value.trim()) {
+        error.textContent = msg;
+        valid = false;
+      } else {
+        error.textContent = "";
+      }
+    });
+
+    /* MOBILE VALIDATION */
+    const mobileNumberEl = document.getElementById("mobileNumber");
+    const mobileNumber = mobileNumberEl.value.trim();
+    const mobileError = document.getElementById("mobileError");
+    const countryCode = countryCodeInput.value.trim();
+
+    if (!countryCode || !mobileNumber) {
+      mobileError.textContent = "Mobile number with country code is required";
+      valid = false;
+    } else {
+      if (countryCode === "+61") {
+        const formatted = formatAustralianMobile(mobileNumber);
+        if (!formatted) {
+          mobileError.textContent = "Australian mobile must be 10 digits and start with 04";
+          valid = false;
+        } else {
+          mobileNumberEl.value = formatted;
+          mobileError.textContent = "";
+        }
+      } else if (countryCode === "+91") {
+        if (!/^\d{10}$/.test(mobileNumber)) {
+          mobileError.textContent = "Indian mobile must be 10 digits";
+          valid = false;
+        } else {
+          mobileError.textContent = "";
+        }
+      } else {
+        mobileError.textContent = "";
+      }
+    }
+
+    if (!valid) return;
+
+    /* ------------------------------------------------------------
+       FULL NAME AUTO-GENERATION
+    ------------------------------------------------------------ */
+    const first = document.getElementById("firstName").value.trim();
+    const last = document.getElementById("lastName").value.trim();
+    const fullNameInput = document.getElementById("fullName").value.trim();
+
+    const fullName = fullNameInput || `${first} ${last}`.trim();
+
+    /* ------------------------------------------------------------
+       DATA OBJECT
+    ------------------------------------------------------------ */
+    const data = {
+      firstName: first,
+      lastName: last,
+      fullName,
+      gender: document.getElementById("gender").value,
+      dob: document.getElementById("dob").value,
+      passport: document.getElementById("passportNumber").value.trim(),
+      mobile: countryCode + " " + document.getElementById("mobileNumber").value.trim(),
+      familyHead: document.getElementById("familyHead").checked ? "Yes" : "No",
+      addrLine1: document.getElementById("addrLine1").value.trim(),
+      addrLine2: document.getElementById("addrLine2").value.trim(),
+      city: document.getElementById("city").value.trim(),
+      state: document.getElementById("state").value.trim(),
+      country: document.getElementById("country").value,
+      areInitiated: document.getElementById("areInitiated").value,
+      initiationStatus: document.getElementById("initiationStatus").value,
+      placeOfInitiation: document.getElementById("placeOfInitiation").value.trim(),
+      initiationDate: document.getElementById("initiationDate").value,
+      shikshaGuru: document.getElementById("shikshaGuru").value.trim(),
+      dikshaGuru: document.getElementById("dikshaGuru").value.trim()
+    };
+
+    /* ------------------------------------------------------------
+       SAVE TO FIREBASE
+    ------------------------------------------------------------ */
+    try {
+      const ref = db.ref("devotees").push();
+      await ref.set(data);
+
+      form.reset();
+      countryCodeInput.value = "";
+      document.querySelectorAll(".error").forEach(e => e.textContent = "");
+
+      successModalBackdrop.style.display = "flex";
+    } catch (err) {
+      alert("Error submitting details. Please try again.");
+      console.error(err);
+    }
+  };
+
+  /* ------------------------------------------------------------
+     RESET BUTTON
+  ------------------------------------------------------------ */
+  resetBtn.onclick = () => {
+    form.reset();
+    countryCodeInput.value = "";
+    document.querySelectorAll(".error").forEach(e => e.textContent = "");
+  };
+
+  successCloseBtn.onclick = () => {
+    successModalBackdrop.style.display = "none";
+  };
+
+  /* ------------------------------------------------------------
+     ADMIN LOGIN
+  ------------------------------------------------------------ */
+  function showAdminModal() {
+    adminPasswordInput.value = "";
+    adminPasswordError.textContent = "";
+    adminModalBackdrop.style.display = "flex";
+    adminPasswordInput.focus();
+  }
+
+  function hideAdminModal() {
+    adminModalBackdrop.style.display = "none";
+  }
+
+  adminBtn.onclick = () => showAdminModal();
+
+  adminLoginBtn.onclick = () => {
+    if (adminPasswordInput.value === ADMIN_PASSWORD) {
+      hideAdminModal();
+      adminView.classList.remove("hidden");
+      userView.classList.add("hidden");
+      if (welcomeMessage) welcomeMessage.style.display = "none";
+      loadFromDatabase();
+    } else {
+      adminPasswordError.textContent = "Incorrect password.";
+    }
+  };
+
+  userBtn.onclick = () => {
+    adminView.classList.add("hidden");
+    userView.classList.remove("hidden");
+    if (welcomeMessage) welcomeMessage.style.display = "none";
+  };
+
+ /* ------------------------------------------------------------
+     LOAD DATA FOR ADMIN TABLE
+------------------------------------------------------------ */
+function loadFromDatabase() {
+  db.ref("devotees").once("value", (snapshot) => {
+    devotees = [];
+    devoteesKeys = [];
+    snapshot.forEach(child => {
+      devoteesKeys.push(child.key);
+      devotees.push(child.val());
+    });
+    renderTable();
+  });
+}
+
+/* ------------------------------------------------------------
+     FORMAT DOB (DD-MMM-YYYY)
+------------------------------------------------------------ */
+function formatDOB(dateStr) {
+  if (!dateStr) return "";
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const [yyyy, mm, dd] = dateStr.split("-");
+  return `${dd}-${months[parseInt(mm, 10) - 1]}-${yyyy}`;
+}
+
+/* ------------------------------------------------------------
+     RENDER ADMIN TABLE
+------------------------------------------------------------ */
+function renderTable() {
+  const tbody = document.querySelector("#devoteeTable tbody");
+  tbody.innerHTML = "";
+
+  devotees.forEach((d, index) => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td><input type="checkbox" class="row-select" data-index="${index}"></td>
+      <td>${d.firstName || ""}</td>
+      <td>${d.lastName || ""}</td>
+      <td>${d.fullName || ""}</td>
+      <td>${d.gender || ""}</td>
+      <td>${formatDOB(d.dob)}</td>
+      <td>${d.passport || ""}</td>
+      <td>${d.mobile || ""}</td>
+      <td>${d.familyHead || ""}</td>
+      <td>${d.addrLine1 || ""}</td>
+      <td>${d.addrLine2 || ""}</td>
+      <td>${d.city || ""}</td>
+      <td>${d.state || ""}</td>
+      <td>${d.country || ""}</td>
+      <td>${d.areInitiated || ""}</td>
+      <td>${d.initiationStatus || ""}</td>
+      <td>${d.placeOfInitiation || ""}</td>
+      <td>${formatDOB(d.initiationDate)}</td>
+      <td>${d.shikshaGuru || ""}</td>
+      <td>${d.dikshaGuru || ""}</td>
+    `;
+
+    tbody.appendChild(row);
+  });
+}
+
+
+  /* ------------------------------------------------------------
+     EXPORT FUNCTIONS
+  ------------------------------------------------------------ */
+  function exportCSV(rows) {
+    let csv = "First Name,Last Name,Full Name,Gender,DOB,Passport,Mobile,Family Head,Addr1,Addr2,City,State,Country,Are Initiated,Initiation Status,Place of Initiation,Initiation Date,Shiksha Guru,Diksha Guru\n";
+    rows.forEach(r => {
+      csv += [
+        r.firstName || "",
+        r.lastName || "",
+        r.fullName || "",
+        r.gender || "",
+        r.dob || "",
+        r.passport || "",
+        r.mobile || "",
+        r.familyHead || "",
+        r.addrLine1 || "",
+        r.addrLine2 || "",
+        r.city || "",
+        r.state || "",
+        r.country || "",
+        r.areInitiated || "",
+        r.initiationStatus || "",
+        r.placeOfInitiation || "",
+        r.initiationDate || "",
+        r.shikshaGuru || "",
+        r.dikshaGuru || ""
+      ].join(",") + "\n";
+    });
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "devotees.csv";
+    a.click();
+  }
+
+  function exportExcel(rows) {
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Devotees");
+    XLSX.writeFile(wb, "devotees.xlsx");
+  }
+
+  function exportPDF(rows) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    let y = 10;
+    rows.forEach((r, i) => {
+      const line = `${i+1}. ${r.fullName || ""} | ${r.mobile || ""} | ${r.initiationStatus || ""}`;
+      doc.text(line, 10, y);
+      y += 8;
+      if (y > 280) {
+        doc.addPage();
+        y = 10;
+      }
+    });
+
+    doc.save("devotees.pdf");
+  }
+
+  /* ------------------------------------------------------------
+     DELETE SELECTED
+  ------------------------------------------------------------ */
+  deleteSelectedBtn.onclick = () => {
+    const checkboxes = document.querySelectorAll(".row-select:checked");
+    const indexes = [...checkboxes].map(cb => parseInt(cb.dataset.index));
+
+    const toDelete = indexes.map(i => devoteesKeys[i]).filter(k => k);
+
+    toDelete.forEach(key => {
+      db.ref("devotees/" + key).remove();
+    });
+
+    setTimeout(() => loadFromDatabase(), 500);
+  };
+
+/* ------------------------------------------------------------
+   EXPORT FUNCTIONS
+------------------------------------------------------------ */
+
+const exportFields = [
+  "firstName", "lastName", "fullName", "gender", "dob", "passport", "mobile", "familyHead",
+  "addrLine1", "addrLine2", "city", "state", "country",
+  "areInitiated", "initiationStatus", "placeOfInitiation", "initiationDate",
+  "shikshaGuru", "dikshaGuru"
+];
+
+function exportCSV(rows) {
+  const header = exportFields.join(",");
+  const csvRows = rows.map(r =>
+    exportFields.map(f => `"${(r[f] || "").replace(/"/g, '""')}"`).join(",")
+  );
+  const csv = [header, ...csvRows].join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "devotees.csv";
+  a.click();
+}
+
+function exportExcel(rows) {
+  const formatted = rows.map(r => {
+    const obj = {};
+    exportFields.forEach(f => obj[f] = r[f] || "");
+    return obj;
+  });
+
+  const ws = XLSX.utils.json_to_sheet(formatted, { header: exportFields });
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Devotees");
+  XLSX.writeFile(wb, "devotees.xlsx");
+}
+
+/* ------------------------------------------------------------
+   PDF EXPORT — WITH BOLD GURU NAMES + DEVOTIONAL FOOTER
+------------------------------------------------------------ */
+
+function exportPDF(rows) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  let y = 20;
+
+  // Title
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("Devotee List", 10, 10);
+
+  rows.forEach((r, i) => {
+    // Normal line
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+
+    const line = `${i + 1}. ${r.firstName || ""} ${r.lastName || ""} | ${r.mobile || ""} | ${r.initiationStatus || ""}`;
+    doc.text(line, 10, y);
+
+    // Guru names in bold
+    doc.setFont("helvetica", "bold");
+    const guruLine = `Shiksha Guru: ${r.shikshaGuru || ""} | Diksha Guru: ${r.dikshaGuru || ""}`;
+    doc.text(guruLine, 10, y + 6);
+
+    y += 16;
+
+    // Page break
+    if (y > 260) {
+      addFooter(doc);
+      doc.addPage();
+      y = 20;
+    }
+  });
+
+  // Final footer
+  addFooter(doc);
+
+  doc.save("devotees.pdf");
+}
+
+// Footer function
+function addFooter(doc) {
+  doc.setFont("helvetica", "italic");
+  doc.setFontSize(10);
+  doc.text("Hare Krishna.. All glories to guru and Gaurango", 10, 290);
+}
+
+/* ------------------------------------------------------------
+   EXPORT BUTTONS
+------------------------------------------------------------ */
+exportAllCsvBtn.onclick = () => exportCSV(devotees);
+exportAllXlsxBtn.onclick = () => exportExcel(devotees);
+exportAllPdfBtn.onclick = () => exportPDF(devotees);
+
+});
+</script>
+</body>
+</html>
+
