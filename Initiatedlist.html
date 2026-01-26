@@ -31,18 +31,28 @@
   font-weight: bold;
 }
 
+#country {
+  max-width: 120px;
+  width: 120px;
+}
+#dikshaGuru {
+  max-width: 280px;
+  width: 100%;
+}
+
+
 /* Narrower Country column */
 #devoteeTable th:nth-child(16),
 #devoteeTable td:nth-child(16) {
   max-width: 80px;
   width: 80px;
 }
-/* Diksha Guru column half width */
-#devoteeTable th:nth-child(24),
-#devoteeTable td:nth-child(24) {
-  max-width: 90px;
-  width: 90px;
+#devoteeTable th[data-field="dikshaGuru"],
+#devoteeTable td:nth-child(??) {
+  max-width: 220px;
+  width: 220px;
 }
+
 
 body {
   margin: 0;
@@ -357,247 +367,257 @@ th {
   <h2 style="margin-bottom:0;">Welcome to ISKCON Perth</h2>
 </div>
 
-  <!-- ===================== ADMIN VIEW ===================== -->
-  <div id="adminView" class="card hidden">
-    <h2>Admin Dashboard</h2>
+<!-- ===================== ADMIN VIEW ===================== -->
+<div id="adminView" class="card hidden">
+  <h2>Admin Dashboard</h2>
 
-    <div class="admin-controls">
-      <button id="deleteSelectedBtn">Delete</button>
-      <button id="exportAllCsvBtn">Export to .csv</button>
-      <button id="exportAllXlsxBtn">Export to .xlsx</button>
-    </div>
-    <input 
-      type="text" 
-      id="adminSearchInput" 
-      placeholder="Search devotees..." 
-      style="padding:8px; width:260px; border-radius:6px; border:1px solid #ccc; margin-bottom:10px;">
-
-    <table id="devoteeTable">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Edit</th>
-
-          <th data-field="firstName" class="sortable">First Name <span class="sort-icon"></span></th>
-          <th data-field="lastName" class="sortable">Last Name <span class="sort-icon"></span></th>
-          <th data-field="fullName" class="sortable">Full Name as per passport <span class="sort-icon"></span></th>
-          <th data-field="email" class="sortable">Email <span class="sort-icon"></span></th>
-          <th data-field="gender" class="sortable">Gender <span class="sort-icon"></span></th>
-          <th data-field="dob" class="sortable">DOB <span class="sort-icon"></span></th>
-
-          <th data-field="passport" class="sortable">Passport <span class="sort-icon"></span></th>
-          <th data-field="mobile" class="sortable">Mobile <span class="sort-icon"></span></th>
-          <th data-field="familyHead" class="sortable">Family Head <span class="sort-icon"></span></th>
-          <th data-field="addrLine1" class="sortable">Addr1 <span class="sort-icon"></span></th>
-          <th data-field="addrLine2" class="sortable">Addr2 <span class="sort-icon"></span></th>
-          <th data-field="city" class="sortable">City <span class="sort-icon"></span></th>
-          <th data-field="state" class="sortable">State <span class="sort-icon"></span></th>
-          <th data-field="postcode" class="sortable">Postcode <span class="sort-icon"></span></th>
-          <th data-field="country" class="sortable">Country <span class="sort-icon"></span></th>
-
-          <th data-field="areInitiated" class="sortable">Are Initiated <span class="sort-icon"></span></th>
-          <th data-field="initiatedName" class="sortable">Initiated Name <span class="sort-icon"></span></th>
-          <th data-field="initiationStatus" class="sortable">Initiation Status <span class="sort-icon"></span></th>
-          <th data-field="placeOfInitiation" class="sortable">Place of Initiation <span class="sort-icon"></span></th>
-          <th data-field="initiationDate" class="sortable">Initiation Date <span class="sort-icon"></span></th>
-
-          <th data-field="shikshaGuru" class="sortable">Siksha Guru / Mentor <span class="sort-icon"></span></th>
-          <th data-field="dikshaGuru" class="sortable">Diksha Guru <span class="sort-icon"></span></th>
-
-          <th data-field="submissionDate" class="sortable">Submission Date <span class="sort-icon"></span></th>
-          <th data-field="lastUpdatedDate" class="sortable">Last Updated <span class="sort-icon"></span></th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-<!-- Pagination controls --> <div id="paginationControls" style="margin-top:15px; text-align:center; font-weight:600;"></div>
+  <div class="admin-controls">
+    <button id="deleteSelectedBtn">Delete Multiple</button>
+    <button id="exportAllCsvBtn">Export to .csv</button>
+    <button id="exportAllXlsxBtn">Export to .xlsx</button>
   </div>
 
-  <!-- ===================== USER VIEW ===================== -->
-  <div id="userView" class="card">
-    <h2>Dear Devotee, please fill the below details</h2>
+  <input 
+    type="text" 
+    id="adminSearchInput" 
+    placeholder="Search devotees..." 
+    style="padding:8px; width:260px; border-radius:6px; border:1px solid #ccc; margin-bottom:10px;">
 
-    <form id="devoteeForm">
+  <table id="devoteeTable">
+    <thead>
+      <tr>
+        <th style="width:20px;"></th>          <!-- checkbox -->
+        <th style="width:40px;">Edit</th>      <!-- edit button -->
+        <th style="width:60px;">Delete</th>    <!-- delete button -->
 
-      <!-- PERSONAL DETAILS -->
-      <div class="form-section-title">Personal Details</div>
+        <th data-field="firstName" class="sortable">First Name <span class="sort-icon"></span></th>
+        <th data-field="lastName" class="sortable">Last Name <span class="sort-icon"></span></th>
+        <th data-field="fullName" class="sortable">Full Name as per passport <span class="sort-icon"></span></th>
+        <th data-field="email" class="sortable">Email <span class="sort-icon"></span></th>
+        <th data-field="gender" class="sortable">Gender <span class="sort-icon"></span></th>
+        <th data-field="dob" class="sortable">DOB <span class="sort-icon"></span></th>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>First Name (as per passport) *</label>
-          <input type="text" id="firstName">
-          <div class="error" id="firstNameError"></div>
-        </div>
+        <!-- REPLACED PASSPORT WITH DRIVING LICENCE -->
+        <th data-field="drivingLicence" class="sortable">Driving Licence <span class="sort-icon"></span></th>
 
-        <div class="form-group">
-          <label>Last Name (as per passport) *</label>
-          <input type="text" id="lastName">
-          <div class="error" id="lastNameError"></div>
-        </div>
+        <th data-field="mobile" class="sortable">Mobile <span class="sort-icon"></span></th>
+        <th data-field="familyHead" class="sortable">Family Head <span class="sort-icon"></span></th>
+        <th data-field="addrLine1" class="sortable">Addr1 <span class="sort-icon"></span></th>
+        <th data-field="addrLine2" class="sortable">Addr2 <span class="sort-icon"></span></th>
+        <th data-field="city" class="sortable">City <span class="sort-icon"></span></th>
+        <th data-field="state" class="sortable">State <span class="sort-icon"></span></th>
+        <th data-field="postcode" class="sortable">Postcode <span class="sort-icon"></span></th>
+        <th data-field="country" class="sortable">Country <span class="sort-icon"></span></th>
 
-        <div class="form-group">
-          <label>Full Name as per passport</label>
-          <input type="text" id="fullName">
-        </div>
+        <th data-field="areInitiated" class="sortable">Are Initiated <span class="sort-icon"></span></th>
+        <th data-field="initiatedName" class="sortable">Initiated Name <span class="sort-icon"></span></th>
+        <th data-field="initiationStatus" class="sortable">Initiation Status <span class="sort-icon"></span></th>
+        <th data-field="placeOfInitiation" class="sortable">Place of Initiation <span class="sort-icon"></span></th>
+        <th data-field="initiationDate" class="sortable">Initiation Date <span class="sort-icon"></span></th>
+
+        <th data-field="shikshaGuru" class="sortable">Siksha Guru / Mentor <span class="sort-icon"></span></th>
+        <th data-field="dikshaGuru" class="sortable">Diksha Guru <span class="sort-icon"></span></th>
+
+        <th data-field="submissionDate" class="sortable">Submission Date <span class="sort-icon"></span></th>
+        <th data-field="lastUpdatedDate" class="sortable">Last Updated <span class="sort-icon"></span></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="paginationControls" style="margin-top:15px; text-align:center; font-weight:600;"></div>
+</div>
+
+<!-- ===================== USER VIEW ===================== -->
+<div id="userView" class="card">
+  <h2>Dear Devotee, please fill the below details</h2>
+
+  <form id="devoteeForm">
+
+    <!-- PERSONAL DETAILS -->
+    <div class="form-section-title">Personal Details</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>First Name (as per passport) *</label>
+        <input type="text" id="firstName">
+        <div class="error" id="firstNameError"></div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Email Address *</label>
-          <input type="email" id="email">
-          <div class="error" id="emailError"></div>
-        </div>
-
-        <div class="form-group">
-          <label>Gender</label>
-          <select id="gender">
-            <option value="">Select</option>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Date of Birth *</label>
-          <input type="date" id="dob">
-          <div class="error" id="dobError"></div>
-        </div>
+      <div class="form-group">
+        <label>Last Name (as per passport) *</label>
+        <input type="text" id="lastName">
+        <div class="error" id="lastNameError"></div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Passport Number *</label>
-          <input type="text" id="passportNumber">
-          <div class="error" id="passportNumberError"></div>
-        </div>
+      <div class="form-group">
+        <label>Full Name as per passport</label>
+        <input type="text" id="fullName">
+      </div>
+    </div>
 
-        <div class="form-group">
-          <label>Mobile Number (Australia only) *</label>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <div class="country-select">
-              <input type="text" id="countryCodeInput" value="+61" readonly>
-              <div class="country-options" id="countryOptions">
-                <div class="country-option" data-code="+61">
-                  <span class="flag">🇦🇺</span> +61 Australia
-                </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Email Address *</label>
+        <input type="email" id="email">
+        <div class="error" id="emailError"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Gender</label>
+        <select id="gender">
+          <option value="">Select</option>
+          <option>Male</option>
+          <option>Female</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Date of Birth *</label>
+        <input type="date" id="dob">
+        <div class="error" id="dobError"></div>
+      </div>
+    </div>
+
+    <div class="form-row">
+
+      <!-- REPLACED PASSPORT WITH DRIVING LICENCE -->
+      <div class="form-group">
+        <label>Driving Licence Number (optional)</label>
+        <input type="text" id="drivingLicence">
+      </div>
+
+      <div class="form-group">
+        <label>Mobile Number (Australia only) *</label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <div class="country-select">
+            <input type="text" id="countryCodeInput" value="+61" readonly>
+            <div class="country-options" id="countryOptions">
+              <div class="country-option" data-code="+61">
+                <span class="flag">🇦🇺</span> +61 Australia
               </div>
             </div>
-            <input type="text" id="mobileNumber" placeholder="04xx xxx xxx" style="width:140px;">
           </div>
-          <div class="error" id="mobileError"></div>
+          <input type="text" id="mobileNumber" placeholder="04xx xxx xxx" style="width:140px;">
         </div>
+        <div class="error" id="mobileError"></div>
       </div>
 
-      <div class="checkbox-group">
-        <input type="checkbox" id="familyHead">
-        <label for="familyHead">Are you family head?</label>
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="familyHead">
+      <label for="familyHead">Are you family head?</label>
+    </div>
+
+    <!-- ADDRESS -->
+    <div class="form-section-title">Current Address</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Address Line 1</label>
+        <input type="text" id="addrLine1">
       </div>
 
-      <!-- ADDRESS -->
-      <div class="form-section-title">Current Address</div>
+      <div class="form-group">
+        <label>Address Line 2</label>
+        <input type="text" id="addrLine2">
+      </div>
+    </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Address Line 1</label>
-          <input type="text" id="addrLine1">
-        </div>
-
-        <div class="form-group">
-          <label>Address Line 2</label>
-          <input type="text" id="addrLine2">
-        </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>City</label>
+        <input type="text" id="city">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>City</label>
-          <input type="text" id="city">
-        </div>
-
-        <div class="form-group">
-          <label>State</label>
-          <input type="text" id="state">
-        </div>
-
-        <div class="form-group">
-          <label>Postcode</label>
-          <input type="text" id="postcode">
-        </div>
+      <div class="form-group">
+        <label>State</label>
+        <input type="text" id="state">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Country</label>
-          <select id="country">
-            <option value="Australia">🇦🇺 Australia</option>
-          </select>
-        </div>
+      <div class="form-group">
+        <label>Postcode</label>
+        <input type="text" id="postcode">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Country</label>
+        <select id="country">
+          <option value="Australia">🇦🇺 Australia</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- INITIATION DETAILS -->
+    <div class="form-section-title">Initiation Details</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Are you initiated?</label>
+        <select id="areInitiated">
+          <option value="">Select</option>
+          <option>YES</option>
+          <option>NO</option>
+        </select>
       </div>
 
-      <!-- INITIATION DETAILS -->
-      <div class="form-section-title">Initiation Details</div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Are you initiated?</label>
-          <select id="areInitiated">
-            <option value="">Select</option>
-            <option>YES</option>
-            <option>NO</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Initiated Name</label>
-          <input type="text" id="initiatedName" class="init-field">
-        </div>
-
-        <div class="form-group">
-          <label>Initiation Status</label>
-          <select id="initiationStatus" class="init-field">
-            <option value="">Select</option>
-            <option>First</option>
-            <option>Second</option>
-            <option>No</option>
-          </select>
-        </div>
+      <div class="form-group">
+        <label>Initiated Name</label>
+        <input type="text" id="initiatedName" class="init-field">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Place of Initiation</label>
-          <input type="text" id="placeOfInitiation" class="init-field">
-        </div>
+      <div class="form-group">
+        <label>Initiation Status</label>
+        <select id="initiationStatus" class="init-field">
+          <option value="">Select</option>
+          <option>First</option>
+          <option>Second</option>
+          <option>No</option>
+        </select>
+      </div>
+    </div>
 
-        <div class="form-group">
-          <label>Date of Initiation</label>
-          <input type="date" id="initiationDate" class="init-field">
-        </div>
-
-        <div class="form-group">
-          <label>Siksha Guru / Mentor (optional)</label>
-          <input type="text" id="shikshaGuru">
-        </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Place of Initiation</label>
+        <input type="text" id="placeOfInitiation" class="init-field">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Diksha Guru Name</label>
-          <input type="text" id="dikshaGuru">
-        </div>
+      <div class="form-group">
+        <label>Date of Initiation</label>
+        <input type="date" id="initiationDate" class="init-field">
       </div>
 
-      <div class="submit-row">
-        <button type="submit">Submit</button>
-        <button type="button" id="resetBtn" style="background:#777;">Reset</button>
+      <div class="form-group">
+        <label>Siksha Guru / Mentor (optional)</label>
+        <input type="text" id="shikshaGuru">
       </div>
+    </div>
 
-    </form>
-  </div>
+<div class="form-group">
+  <label>Diksha Guru Name</label>
+  <input list="dikshaGuruList" id="dikshaGuru" placeholder="<Enter/Select your Guru Maharaj Name>" style="max-width:280px;">
+  <datalist id="dikshaGuruList">
+    <option value="HH Jayapataka Swami Maharaj">
+    <option value="HH Radhanath Swami Maharaj">
+    <option value="HH Romapada Swami Maharaj">
+    <option value="HH Gopal Krishna Goswami Maharaj">
+    <option value="HH Bhakti Vikasa Swami Maharaj">
+  </datalist>
+</div>
 
-</main>
 
+    <div class="submit-row">
+      <button type="submit">Submit</button>
+      <button type="button" id="resetBtn" style="background:#777;">Reset</button>
+    </div>
+
+  </form>
+</div>
 <!-- SUCCESS MODAL -->
 <div id="successModalBackdrop" class="modal-backdrop">
   <div class="modal">
@@ -621,9 +641,19 @@ th {
 <div id="duplicateModalBackdrop" class="admin-modal-backdrop">
   <div class="admin-modal">
     <h3>Duplicate Record Found</h3>
-    <p>There’s already a record existing with this passport number.<br>Do you want to update that record?</p>
+    <p>There’s already a record existing with this email or mobile number.<br>Do you want to update that record?</p>
     <button id="duplicateYesBtn">Yes</button>
     <button id="duplicateNoBtn" style="background:#777;">No</button>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div id="deleteModalBackdrop" class="admin-modal-backdrop">
+  <div class="admin-modal">
+    <h3>Confirm Delete</h3>
+    <p id="deleteModalText">Are you sure you want to delete these records?</p>
+    <button id="deleteYesBtn">Yes</button>
+    <button id="deleteNoBtn" style="background:#777;">No</button>
   </div>
 </div>
 
@@ -631,7 +661,9 @@ th {
 <div id="editModalBackdrop" class="edit-modal-backdrop">
   <div class="edit-modal">
     <h3>Edit Devotee</h3>
+
     <form id="editForm">
+
       <div class="edit-row">
         <div>
           <label>First Name</label>
@@ -672,8 +704,9 @@ th {
 
       <div class="edit-row">
         <div>
-          <label>Passport</label>
-          <input type="text" id="edit_passport">
+          <!-- REPLACED PASSPORT WITH DRIVING LICENCE -->
+          <label>Driving Licence Number (optional)</label>
+          <input type="text" id="edit_drivingLicence">
         </div>
         <div>
           <label>Mobile</label>
@@ -757,7 +790,16 @@ th {
         </div>
         <div>
           <label>Diksha Guru</label>
-          <input type="text" id="edit_dikshaGuru">
+          <input list="editDikshaGuruList" id="edit_dikshaGuru" style="max-width:300px;">
+<datalist id="editDikshaGuruList">
+  <option value="HH Jayapataka Swami Maharaj">
+  <option value="HH Radhanath Swami Maharaj">
+  <option value="HH Romapada Swami Maharaj">
+  <option value="HH Gopal Krishna Goswami Maharaj">
+  <option value="HH Bhakti Vikasa Swami Maharaj">
+  <option value="<Enter/Select your Guru Maharaj Name>">
+</datalist>
+
         </div>
       </div>
 
@@ -765,10 +807,10 @@ th {
         <button type="button" class="edit-cancel-btn" id="editCancelBtn">Cancel</button>
         <button type="submit" class="edit-save-btn">Save</button>
       </div>
+
     </form>
   </div>
 </div>
-
 <script>
 /* ============================================================
    FIREBASE INITIALIZATION
@@ -791,6 +833,32 @@ const db = firebase.database();
    UNIFIED APPLICATION LOGIC
 ============================================================ */
 document.addEventListener("DOMContentLoaded", () => {
+/* Guru Maharaj List */
+const guruList = [
+  "HH Jayapataka Swami Maharaj",
+  "HH Radhanath Swami Maharaj",
+  "HH Romapada Swami Maharaj",
+  "HH Gopal Krishna Goswami Maharaj",
+  "HH Bhakti Vikasa Swami Maharaj"
+];
+/* Sentence case: "I live in India" */
+function toSentenceCase(str) {
+  if (!str) return "";
+  str = str.toLowerCase();
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/* Title case for Guru names */
+function toTitleCase(str) {
+  if (!str) return "";
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+
 
   /* ------------------------------------------------------------
      ELEMENT REFERENCES
@@ -810,6 +878,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const adminPasswordInput = document.getElementById("adminPasswordInput");
   const adminPasswordError = document.getElementById("adminPasswordError");
   const adminLoginBtn = document.getElementById("adminLoginBtn");
+
+  const deleteModalBackdrop = document.getElementById("deleteModalBackdrop");
+  const deleteYesBtn = document.getElementById("deleteYesBtn");
+  const deleteNoBtn = document.getElementById("deleteNoBtn");
 
   const deleteSelectedBtn = document.getElementById("deleteSelectedBtn");
   const exportAllCsvBtn = document.getElementById("exportAllCsvBtn");
@@ -912,23 +984,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   areInitiatedEl.addEventListener("change", updateInitiationFields);
   updateInitiationFields();
+
+
   /* ------------------------------------------------------------
-     FORM SUBMISSION (USER) WITH DUPLICATE CHECK
+     DUPLICATE CHECK (Email + Mobile ONLY)
   ------------------------------------------------------------ */
-  async function findDuplicateKey(passport, emailLower) {
+  async function findDuplicateKey(emailLower, normalizedMobile) {
     const snap = await db.ref("devotees").once("value");
     let foundKey = null;
+
     snap.forEach(child => {
       const v = child.val() || {};
-      const p = (v.passport || "").trim();
       const e = (v.email || "").toLowerCase().trim();
-      if (p === passport || e === emailLower) {
+      const m = (v.mobile || "").trim();
+
+      if (e === emailLower || m === normalizedMobile) {
         foundKey = child.key;
       }
     });
+
     return foundKey;
   }
 
+  /* ------------------------------------------------------------
+     FORM SUBMISSION (USER)
+  ------------------------------------------------------------ */
   form.onsubmit = async (e) => {
     e.preventDefault();
 
@@ -938,7 +1018,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ["firstName", "First name is required"],
       ["lastName", "Last name is required"],
       ["dob", "Date of birth is required"],
-      ["passportNumber", "Passport number is required"],
       ["email", "Email is required"]
     ];
 
@@ -968,7 +1047,6 @@ document.addEventListener("DOMContentLoaded", () => {
         mobileError.textContent = "Australian mobile must be 10 digits and start with 04";
         valid = false;
       } else {
-        // Store as +61 4xx xxx xxx (strip leading 0 after +61)
         const normalized = "+61 " + formatted.slice(1);
         mobileNumberEl.value = formatted;
         mobileError.textContent = "";
@@ -985,7 +1063,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const fullName = fullNameInput || `${first} ${last}`.trim();
 
     const now = Date.now();
-    const passport = document.getElementById("passportNumber").value.trim();
     const emailRaw = document.getElementById("email").value.trim();
     const emailLower = emailRaw.toLowerCase();
     const normalizedMobile = mobileNumberEl.dataset.normalizedMobile;
@@ -997,7 +1074,10 @@ document.addEventListener("DOMContentLoaded", () => {
       email: emailRaw,
       gender: document.getElementById("gender").value,
       dob: document.getElementById("dob").value,
-      passport,
+
+      /* NEW FIELD */
+      drivingLicence: document.getElementById("drivingLicence").value.trim(),
+
       mobile: normalizedMobile,
       familyHead: document.getElementById("familyHead").checked ? "Yes" : "No",
       addrLine1: document.getElementById("addrLine1").value.trim(),
@@ -1006,6 +1086,7 @@ document.addEventListener("DOMContentLoaded", () => {
       state: document.getElementById("state").value.trim(),
       postcode: document.getElementById("postcode").value.trim(),
       country: document.getElementById("country").value,
+
       areInitiated: document.getElementById("areInitiated").value,
       initiatedName: document.getElementById("initiatedName").value.trim(),
       initiationStatus: document.getElementById("initiationStatus").value,
@@ -1013,12 +1094,14 @@ document.addEventListener("DOMContentLoaded", () => {
       initiationDate: document.getElementById("initiationDate").value,
       shikshaGuru: document.getElementById("shikshaGuru").value.trim(),
       dikshaGuru: document.getElementById("dikshaGuru").value.trim(),
+
       submissionDate: now,
       lastUpdatedDate: now
     };
 
     try {
-      const dupKey = await findDuplicateKey(passport, emailLower);
+      const dupKey = await findDuplicateKey(emailLower, normalizedMobile);
+
       if (dupKey) {
         const overwrite = await showDuplicateModal();
         if (!overwrite) return;
@@ -1033,6 +1116,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll(".error").forEach(e => e.textContent = "");
       updateInitiationFields();
       successModalBackdrop.style.display = "flex";
+
     } catch (err) {
       alert("Error submitting details. Please try again.");
       console.error(err);
@@ -1079,30 +1163,64 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-const duplicateModalBackdrop = document.getElementById("duplicateModalBackdrop");
-const duplicateYesBtn = document.getElementById("duplicateYesBtn");
-const duplicateNoBtn = document.getElementById("duplicateNoBtn");
+  /* ------------------------------------------------------------
+     DELETE MODAL
+  ------------------------------------------------------------ */
+  function showDeleteModal(names = []) {
+    return new Promise(resolve => {
+      const textEl = document.getElementById("deleteModalText");
 
-function showDuplicateModal() {
-  return new Promise(resolve => {
-    duplicateModalBackdrop.style.display = "flex";
-    duplicateYesBtn.onclick = () => {
-      duplicateModalBackdrop.style.display = "none";
-      resolve(true);
-    };
-    duplicateNoBtn.onclick = () => {
-      duplicateModalBackdrop.style.display = "none";
-      resolve(false);
-    };
-  });
-}
+      if (names.length === 0) {
+        textEl.textContent = "Are you sure you want to delete these records?";
+      } else if (names.length === 1) {
+        textEl.textContent = `Are you sure you want to delete ${names[0]}?`;
+      } else {
+        const joined = names.join(", ");
+        textEl.textContent = `Are you sure you want to delete these ${names.length} records of ${joined}?`;
+      }
+
+      deleteModalBackdrop.style.display = "flex";
+
+      deleteYesBtn.onclick = () => {
+        deleteModalBackdrop.style.display = "none";
+        resolve(true);
+      };
+
+      deleteNoBtn.onclick = () => {
+        deleteModalBackdrop.style.display = "none";
+        resolve(false);
+      };
+    });
+  }
+
+  /* ------------------------------------------------------------
+     DUPLICATE MODAL
+  ------------------------------------------------------------ */
+  const duplicateModalBackdrop = document.getElementById("duplicateModalBackdrop");
+  const duplicateYesBtn = document.getElementById("duplicateYesBtn");
+  const duplicateNoBtn = document.getElementById("duplicateNoBtn");
+
+  function showDuplicateModal() {
+    return new Promise(resolve => {
+      duplicateModalBackdrop.style.display = "flex";
+
+      duplicateYesBtn.onclick = () => {
+        duplicateModalBackdrop.style.display = "none";
+        resolve(true);
+      };
+
+      duplicateNoBtn.onclick = () => {
+        duplicateModalBackdrop.style.display = "none";
+        resolve(false);
+      };
+    });
+  }
 
   userBtn.onclick = () => {
     adminView.classList.add("hidden");
     userView.classList.remove("hidden");
     if (welcomeMessage) welcomeMessage.style.display = "none";
   };
-
   /* ------------------------------------------------------------
      LOAD DATA FOR ADMIN TABLE
   ------------------------------------------------------------ */
@@ -1114,201 +1232,204 @@ function showDuplicateModal() {
         devoteesKeys.push(child.key);
         devotees.push(child.val());
       });
-      currentPage = 1;           // reset to first page
-      renderWithPagination();    // use paginated render
+      currentPage = 1;
+      renderWithPagination();
       updateSortIcons();
     });
   }
 
-
   /* ------------------------------------------------------------
-     FORMAT DOB (DD-MMM-YYYY) & TIMESTAMP
+     FORMAT DOB & TIMESTAMP
   ------------------------------------------------------------ */
   function formatDOB(dateStr) {
     if (!dateStr) return "";
     const parts = dateStr.split("-");
     if (parts.length !== 3) return dateStr;
     const [yyyy, mm, dd] = parts;
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const mIndex = parseInt(mm, 10) - 1;
-    if (isNaN(mIndex) || mIndex < 0 || mIndex > 11) return dateStr;
-    return `${dd}-${months[mIndex]}-${yyyy}`;
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return `${dd}-${months[parseInt(mm)-1]}-${yyyy}`;
   }
 
-function formatTimestamp(ts) {
-  if (!ts) return "";
-  const d = new Date(ts);
-
-  const dd = String(d.getDate()).padStart(2, "0");
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const mmm = months[d.getMonth()];
-  const yyyy = d.getFullYear();
-
-  let hours = d.getHours();
-  const minutes = String(d.getMinutes()).padStart(2, "0");
-  const ampm = hours >= 12 ? "PM" : "AM";
-
-  hours = hours % 12;
-  hours = hours ? hours : 12; // 0 → 12
-
-  return `${dd}-${mmm}-${yyyy} ${hours}:${minutes} ${ampm}`;
-}
-
+  function formatTimestamp(ts) {
+    if (!ts) return "";
+    const d = new Date(ts);
+    const dd = String(d.getDate()).padStart(2,"0");
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const mmm = months[d.getMonth()];
+    const yyyy = d.getFullYear();
+    let hours = d.getHours();
+    const minutes = String(d.getMinutes()).padStart(2,"0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+    return `${dd}-${mmm}-${yyyy} ${hours}:${minutes} ${ampm}`;
+  }
 
   /* ------------------------------------------------------------
-     RENDER ADMIN TABLE (supports sorting + search)
+     RENDER ADMIN TABLE
   ------------------------------------------------------------ */
   function renderTable(list = devotees, page = 1) {
-  const tbody = document.querySelector("#devoteeTable tbody");
-  tbody.innerHTML = "";
+    const tbody = document.querySelector("#devoteeTable tbody");
+    tbody.innerHTML = "";
 
-  const start = (page - 1) * pageSize;
-  const end = start + pageSize;
-  const pageItems = list.slice(start, end);
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const pageItems = list.slice(start, end);
 
-  pageItems.forEach((d, indexOnPage) => {
-    const globalIndex = start + indexOnPage; // index in full devotees array
+    pageItems.forEach((d, indexOnPage) => {
+      const globalIndex = start + indexOnPage;
+      const row = document.createElement("tr");
 
-    const row = document.createElement("tr");
+      // Checkbox
+      const checkboxTd = document.createElement("td");
+      checkboxTd.style.textAlign = "center";
+      checkboxTd.innerHTML = `<input type="checkbox" class="row-select" data-index="${globalIndex}">`;
+      row.appendChild(checkboxTd);
 
-    // Checkbox
-    const checkboxTd = document.createElement("td");
-    checkboxTd.innerHTML = `<input type="checkbox" class="row-select" data-index="${globalIndex}">`;
-    row.appendChild(checkboxTd);
+      // Edit button
+      const editTd = document.createElement("td");
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "Edit";
+      editBtn.style.padding = "4px 8px";
+      editBtn.style.borderRadius = "12px";
+      editBtn.style.border = "none";
+      editBtn.style.background = "#74b9ff";
+      editBtn.style.color = "#fff";
+      editBtn.style.cursor = "pointer";
+      editBtn.onclick = () => openEditModal(globalIndex);
+      editTd.appendChild(editBtn);
+      row.appendChild(editTd);
 
-    // Edit button
-    const editTd = document.createElement("td");
-    const editBtn = document.createElement("button");
-    editBtn.textContent = "Edit";
-    editBtn.style.padding = "4px 8px";
-    editBtn.style.borderRadius = "12px";
-    editBtn.style.border = "none";
-    editBtn.style.background = "#74b9ff";
-    editBtn.style.color = "#fff";
-    editBtn.style.cursor = "pointer";
-    editBtn.onclick = () => openEditModal(globalIndex);
-    editTd.appendChild(editBtn);
-    row.appendChild(editTd);
+      // Delete button
+      const deleteTd = document.createElement("td");
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Delete";
+      deleteBtn.style.padding = "4px 8px";
+      deleteBtn.style.borderRadius = "12px";
+      deleteBtn.style.border = "none";
+      deleteBtn.style.background = "#d63031";
+      deleteBtn.style.color = "#fff";
+      deleteBtn.style.cursor = "pointer";
+      deleteBtn.onclick = async () => {
+        const name = d.fullName || "this devotee";
+        const confirmed = await showDeleteModal([name]);
+        if (!confirmed) return;
+        const key = devoteesKeys[globalIndex];
+        if (key) db.ref("devotees/" + key).remove().then(() => loadFromDatabase());
+      };
+      deleteTd.appendChild(deleteBtn);
+      row.appendChild(deleteTd);
 
-    const cells = [
-      d.firstName || "",
-      d.lastName || "",
-      d.fullName || "",
-      d.email || "",
-      d.gender || "",
-      formatDOB(d.dob || ""),
-      d.passport || "",
-      d.mobile || "",
-      d.familyHead || "",
-      d.addrLine1 || "",
-      d.addrLine2 || "",
-      d.city || "",
-      d.state || "",
-      d.postcode || "",
-      d.country || "",
-      d.areInitiated || "",
-      d.initiatedName || "",
-      d.initiationStatus || "",
-      d.placeOfInitiation || "",
-      formatDOB(d.initiationDate || ""),
-      d.shikshaGuru || "",
-      d.dikshaGuru || "",
-      formatTimestamp(d.submissionDate),
-      formatTimestamp(d.lastUpdatedDate)
-    ];
+      // Data cells (Driving Licence included)
+      const cells = [
+        d.firstName || "",
+        d.lastName || "",
+        d.fullName || "",
+        d.email || "",
+        d.gender || "",
+        formatDOB(d.dob || ""),
+        d.drivingLicence || "",
+        d.mobile || "",
+        d.familyHead || "",
+toSentenceCase(d.addrLine1 || ""), 
+toSentenceCase(d.addrLine2 || ""), 
+toSentenceCase(d.city || ""), 
+toSentenceCase(d.state || ""),
+        d.postcode || "",
+        d.country || "",
+        d.areInitiated || "",
+        d.initiatedName || "",
+        d.initiationStatus || "",
+toSentenceCase(d.placeOfInitiation || ""),
+        formatDOB(d.initiationDate || ""),
+toTitleCase(d.shikshaGuru || ""),
+(d.dikshaGuru || "").toUpperCase(),
 
-    cells.forEach(val => {
-      const td = document.createElement("td");
-      td.textContent = val;
-      row.appendChild(td);
+        formatTimestamp(d.submissionDate),
+        formatTimestamp(d.lastUpdatedDate)
+      ];
+
+      cells.forEach(val => {
+        const td = document.createElement("td");
+        td.textContent = val;
+        row.appendChild(td);
+      });
+
+      tbody.appendChild(row);
+    });
+  }
+
+  function renderWithPagination(list = devotees) {
+    renderTable(list, currentPage);
+    buildPaginationControls(list);
+  }
+
+  function buildPaginationControls(list = devotees) {
+    const totalItems = list.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+    const container = document.getElementById("paginationControls");
+    if (!container) return;
+
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    container.innerHTML = "";
+
+    const prevBtn = document.createElement("button");
+    prevBtn.textContent = "« Prev";
+    prevBtn.disabled = (currentPage === 1);
+    prevBtn.onclick = () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderWithPagination(list);
+        updateSortIcons();
+      }
+    };
+
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "Next »";
+    nextBtn.disabled = (currentPage === totalPages);
+    nextBtn.onclick = () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderWithPagination(list);
+        updateSortIcons();
+      }
+    };
+
+    const infoSpan = document.createElement("span");
+    infoSpan.textContent = `Page ${currentPage} of ${totalPages}`;
+
+    [prevBtn, infoSpan, nextBtn].forEach(el => {
+      el.style.padding = "5px 10px";
+      el.style.borderRadius = "14px";
+      el.style.border = "none";
+      el.style.cursor = "pointer";
+      el.style.fontSize = "13px";
+      el.style.fontWeight = "600";
     });
 
-    tbody.appendChild(row);
-  });
-}
+    prevBtn.style.background = "#fab1a0";
+    nextBtn.style.background = "#fab1a0";
+    infoSpan.style.background = "transparent";
 
-function renderWithPagination(list = devotees) {
-  renderTable(list, currentPage);
-  buildPaginationControls(list);
-}
-
-function buildPaginationControls(list = devotees) {
-  const totalItems = list.length;
-  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-  const container = document.getElementById("paginationControls");
-  if (!container) return;
-
-  if (currentPage > totalPages) currentPage = totalPages;
-
-  container.innerHTML = "";
-
-  const prevBtn = document.createElement("button");
-  prevBtn.textContent = "« Prev";
-  prevBtn.style.marginRight = "10px";
-  prevBtn.disabled = (currentPage === 1);
-  prevBtn.onclick = () => {
-    if (currentPage > 1) {
-      currentPage--;
-      renderWithPagination(list);
-      updateSortIcons();
-    }
-  };
-
-  const nextBtn = document.createElement("button");
-  nextBtn.textContent = "Next »";
-  nextBtn.style.marginLeft = "10px";
-  nextBtn.disabled = (currentPage === totalPages);
-  nextBtn.onclick = () => {
-    if (currentPage < totalPages) {
-      currentPage++;
-      renderWithPagination(list);
-      updateSortIcons();
-    }
-  };
-
-  const infoSpan = document.createElement("span");
-  infoSpan.textContent = `Page ${currentPage} of ${totalPages}`;
-
-  [prevBtn, infoSpan, nextBtn].forEach(el => {
-    el.style.padding = "5px 10px";
-    el.style.borderRadius = "14px";
-    el.style.border = "none";
-    el.style.cursor = "pointer";
-    el.style.fontSize = "13px";
-    el.style.fontWeight = "600";
-  });
-
-  prevBtn.style.background = "#fab1a0";
-  nextBtn.style.background = "#fab1a0";
-  infoSpan.style.background = "transparent";
-  infoSpan.style.cursor = "default";
-
-  container.appendChild(prevBtn);
-  container.appendChild(infoSpan);
-  container.appendChild(nextBtn);
-}
-
-
+    container.appendChild(prevBtn);
+    container.appendChild(infoSpan);
+    container.appendChild(nextBtn);
+  }
 
   /* ------------------------------------------------------------
-     SEARCH + SORT LOGIC
+     SEARCH + SORT
   ------------------------------------------------------------ */
   let currentSortField = null;
-  let currentSortDirection = 1; // 1 = asc, -1 = desc
+  let currentSortDirection = 1;
 
-document.getElementById("adminSearchInput").addEventListener("input", function () {
-  const q = this.value.toLowerCase();
-
-  const filtered = devotees.filter(d => {
-    return Object.values(d).some(v =>
-      String(v || "").toLowerCase().includes(q)
+  document.getElementById("adminSearchInput").addEventListener("input", function () {
+    const q = this.value.toLowerCase();
+    const filtered = devotees.filter(d =>
+      Object.values(d).some(v => String(v || "").toLowerCase().includes(q))
     );
+    currentPage = 1;
+    renderWithPagination(filtered);
   });
-
-  currentPage = 1;          // reset to first page on new search
-  renderWithPagination(filtered);
-});
-
 
   document.querySelectorAll(".sortable").forEach(th => {
     th.addEventListener("click", () => {
@@ -1321,48 +1442,44 @@ document.getElementById("adminSearchInput").addEventListener("input", function (
         currentSortDirection = 1;
       }
 
-          devotees.sort((a, b) => {
-      let A = a[field] || "";
-      let B = b[field] || "";
+      devotees.sort((a, b) => {
+        let A = a[field] || "";
+        let B = b[field] || "";
 
-      if (["dob", "initiationDate", "submissionDate", "lastUpdatedDate"].includes(field)) {
-        return (new Date(A) - new Date(B)) * currentSortDirection;
-      }
+        if (["dob","initiationDate","submissionDate","lastUpdatedDate"].includes(field)) {
+          return (new Date(A) - new Date(B)) * currentSortDirection;
+        }
 
-      if (field === "postcode") {
-        return (parseInt(A) - parseInt(B)) * currentSortDirection;
-      }
+        if (field === "postcode") {
+          return (parseInt(A) - parseInt(B)) * currentSortDirection;
+        }
 
-      return A.toString().localeCompare(B.toString()) * currentSortDirection;
+        return A.toString().localeCompare(B.toString()) * currentSortDirection;
+      });
+
+      currentPage = 1;
+      renderWithPagination();
+      updateSortIcons();
     });
-
-    currentPage = 1;          // go back to first page after sort
-    renderWithPagination();   // use pagination-aware render
-    updateSortIcons();
   });
-});
-
 
   function updateSortIcons() {
     document.querySelectorAll(".sortable").forEach(th => {
       const icon = th.querySelector(".sort-icon");
       const field = th.dataset.field;
-
       if (!icon) return;
-
       if (field !== currentSortField) {
         icon.textContent = "";
-        return;
+      } else {
+        icon.textContent = currentSortDirection === 1 ? "▲" : "▼";
       }
-
-      icon.textContent = currentSortDirection === 1 ? "▲" : "▼";
     });
   }
 
   /* ------------------------------------------------------------
      DELETE SELECTED
   ------------------------------------------------------------ */
-  deleteSelectedBtn.onclick = () => {
+  deleteSelectedBtn.onclick = async () => {
     const checkboxes = document.querySelectorAll(".row-select:checked");
     const indexes = [...checkboxes].map(cb => parseInt(cb.dataset.index));
 
@@ -1371,17 +1488,12 @@ document.getElementById("adminSearchInput").addEventListener("input", function (
       return;
     }
 
-    const names = indexes.map(i => devotees[i].fullName || "this devotee").join(", ");
-
-    if (!confirm(`Are you sure you want to delete ${names}?`)) {
-      return;
-    }
+    const names = indexes.map(i => devotees[i].fullName || "this devotee");
+    const confirmed = await showDeleteModal(names);
+    if (!confirmed) return;
 
     const toDelete = indexes.map(i => devoteesKeys[i]).filter(k => k);
-
-    toDelete.forEach(key => {
-      db.ref("devotees/" + key).remove();
-    });
+    toDelete.forEach(key => db.ref("devotees/" + key).remove());
 
     setTimeout(() => loadFromDatabase(), 500);
   };
@@ -1403,7 +1515,10 @@ document.getElementById("adminSearchInput").addEventListener("input", function (
     document.getElementById("edit_email").value = d.email || "";
     document.getElementById("edit_gender").value = d.gender || "";
     document.getElementById("edit_dob").value = d.dob || "";
-    document.getElementById("edit_passport").value = d.passport || "";
+
+    /* NEW FIELD */
+    document.getElementById("edit_drivingLicence").value = d.drivingLicence || "";
+
     document.getElementById("edit_mobile").value = d.mobile || "";
     document.getElementById("edit_familyHead").checked = (d.familyHead === "Yes");
     document.getElementById("edit_country").value = d.country || "";
@@ -1418,7 +1533,11 @@ document.getElementById("adminSearchInput").addEventListener("input", function (
     document.getElementById("edit_placeOfInitiation").value = d.placeOfInitiation || "";
     document.getElementById("edit_initiationDate").value = d.initiationDate || "";
     document.getElementById("edit_shikshaGuru").value = d.shikshaGuru || "";
-    document.getElementById("edit_dikshaGuru").value = d.dikshaGuru || "";
+    document.getElementById("edit_dikshaGuru").value =
+  guruList.includes(d.dikshaGuru)
+    ? d.dikshaGuru
+    : toTitleCase(d.dikshaGuru || "");
+
 
     updateAdminInitiationFields();
     editModalBackdrop.style.display = "flex";
@@ -1442,9 +1561,7 @@ document.getElementById("adminSearchInput").addEventListener("input", function (
     fields.forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
-
       el.disabled = disabled;
-
       if (disabled) {
         el.classList.add("disabled-field");
         el.value = "";
@@ -1463,32 +1580,31 @@ document.getElementById("adminSearchInput").addEventListener("input", function (
   };
 
   /* ------------------------------------------------------------
-     EDIT FORM SUBMIT WITH DUPLICATE CHECK + MOBILE NORMALIZATION
+     EDIT FORM SUBMIT (Email + Mobile duplicate check)
   ------------------------------------------------------------ */
   editForm.addEventListener("submit", (e) => {
     e.preventDefault();
     if (!currentEditKey) return;
 
-    const passport = document.getElementById("edit_passport").value.trim();
     const emailRaw = document.getElementById("edit_email").value.trim();
     const emailLower = emailRaw.toLowerCase();
     const mobileInput = document.getElementById("edit_mobile").value.trim();
     const mobileFormatted = formatMobile(mobileInput);
 
-    if (!passport || !emailRaw || !mobileFormatted) {
-      alert("Passport, email, and a valid Australian mobile are required.");
+    if (!emailRaw || !mobileFormatted) {
+      alert("Email and a valid Australian mobile are required.");
       return;
     }
 
     const duplicateKey = devoteesKeys.find((key, i) => {
       const d = devotees[i];
-      const p = (d.passport || "").trim();
       const e = (d.email || "").toLowerCase().trim();
-      return key !== currentEditKey && (p === passport || e === emailLower);
+      const m = (d.mobile || "").trim();
+      return key !== currentEditKey && (e === emailLower || m === mobileFormatted);
     });
 
     if (duplicateKey) {
-      const confirmUpdate = confirm("Another devotee with this passport or email exists. Overwrite that record instead?");
+      const confirmUpdate = confirm("Another devotee with this email or mobile exists. Overwrite that record instead?");
       if (!confirmUpdate) return;
       currentEditKey = duplicateKey;
     }
@@ -1500,22 +1616,25 @@ document.getElementById("adminSearchInput").addEventListener("input", function (
       email: emailRaw,
       gender: document.getElementById("edit_gender").value.trim(),
       dob: document.getElementById("edit_dob").value,
-      passport,
+
+      /* NEW FIELD */
+      drivingLicence: document.getElementById("edit_drivingLicence").value.trim(),
+
       mobile: mobileFormatted,
       familyHead: document.getElementById("edit_familyHead").checked ? "Yes" : "No",
       country: document.getElementById("edit_country").value.trim(),
-      addrLine1: document.getElementById("edit_addrLine1").value.trim(),
-      addrLine2: document.getElementById("edit_addrLine2").value.trim(),
-      city: document.getElementById("edit_city").value.trim(),
-      state: document.getElementById("edit_state").value.trim(),
+addrLine1: toSentenceCase(document.getElementById("edit_addrLine1").value.trim()), 
+addrLine2: toSentenceCase(document.getElementById("edit_addrLine2").value.trim()), 
+city: toSentenceCase(document.getElementById("edit_city").value.trim()), 
+state: toSentenceCase(document.getElementById("edit_state").value.trim()),
       postcode: document.getElementById("edit_postcode").value.trim(),
       areInitiated: document.getElementById("edit_areInitiated").value.trim(),
-      initiatedName: document.getElementById("edit_initiatedName").value.trim(),
+initiatedName: toSentenceCase(document.getElementById("edit_initiatedName").value.trim()),
       initiationStatus: document.getElementById("edit_initiationStatus").value.trim(),
-      placeOfInitiation: document.getElementById("edit_placeOfInitiation").value.trim(),
+placeOfInitiation: toSentenceCase(document.getElementById("edit_placeOfInitiation").value.trim()),
       initiationDate: document.getElementById("edit_initiationDate").value,
-      shikshaGuru: document.getElementById("edit_shikshaGuru").value.trim(),
-      dikshaGuru: document.getElementById("edit_dikshaGuru").value.trim(),
+shikshaGuru: toTitleCase(document.getElementById("edit_shikshaGuru").value.trim()),
+      dikshaGuru: document.getElementById("edit_dikshaGuru").value.trim().toUpperCase(),
       lastUpdatedDate: Date.now()
     };
 
@@ -1532,15 +1651,16 @@ document.getElementById("adminSearchInput").addEventListener("input", function (
      EXPORT FUNCTIONS
   ------------------------------------------------------------ */
   const exportFields = [
-    "firstName", "lastName", "fullName", "email", "gender", "dob", "passport", "mobile", "familyHead",
+    "firstName", "lastName", "fullName", "email", "gender", "dob",
+    "drivingLicence", "mobile", "familyHead",
     "addrLine1", "addrLine2", "city", "state", "postcode", "country",
-    "areInitiated", "initiatedName", "initiationStatus", "placeOfInitiation", "initiationDate",
-    "shikshaGuru", "dikshaGuru", "submissionDate", "lastUpdatedDate"
+    "areInitiated", "initiatedName", "initiationStatus", "placeOfInitiation",
+    "initiationDate", "shikshaGuru", "dikshaGuru",
+    "submissionDate", "lastUpdatedDate"
   ];
 
   function exportCSV(rows) {
     const header = exportFields.join(",");
-
     const csvRows = rows.map(r => {
       const obj = {};
       exportFields.forEach(f => {
@@ -1552,12 +1672,11 @@ document.getElementById("adminSearchInput").addEventListener("input", function (
           obj[f] = r[f] || "";
         }
       });
-      return exportFields.map(f => `"${String(obj[f]).replace(/"/g, '""')}"`).join(",");
+      return exportFields.map(f => `"${String(obj[f]).replace(/"/g,'""')}"`).join(",");
     });
 
     const csv = [header, ...csvRows].join("\n");
-
-    const blob = new Blob([csv], { type: "text/csv" });
+    const blob = new Blob([csv], { type:"text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -1582,15 +1701,15 @@ document.getElementById("adminSearchInput").addEventListener("input", function (
 
     const ws = XLSX.utils.json_to_sheet(formatted, { header: exportFields });
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Devotees");
-    XLSX.writeFile(wb, "devotees.xlsx");
-  }
+XLSX.utils.book_append_sheet(wb, ws, "Devotees");
+XLSX.writeFile(wb, "devotees.xlsx");
+}
 
-  /* ------------------------------------------------------------
-     EXPORT BUTTONS
-  ------------------------------------------------------------ */
-  exportAllCsvBtn.onclick = () => exportCSV(devotees);
-  exportAllXlsxBtn.onclick = () => exportExcel(devotees);
+/* ------------------------------------------------------------
+   EXPORT BUTTONS
+------------------------------------------------------------ */
+exportAllCsvBtn.onclick = () => exportCSV(devotees);
+exportAllXlsxBtn.onclick = () => exportExcel(devotees);
 
 });
 </script>
