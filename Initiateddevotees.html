@@ -463,15 +463,18 @@ th {
         <div class="error" id="emailError"></div>
       </div>
 
-      <div class="form-group">
-        <label>Gender</label>
-        <select id="gender">
-          <option value="">Select</option>
-          <option>Male</option>
-          <option>Female</option>
-          <option>Other</option>
-        </select>
-      </div>
+<div class="form-group">
+  <label>Gender *</label>
+  <select id="gender">
+    <option value="">Select</option>
+    <option>Male</option>
+    <option>Female</option>
+    <option>Other</option>
+    <option>Prefer not to say</option>
+  </select>
+  <div class="error" id="genderError"></div>
+</div>
+
 
       <div class="form-group">
         <label>Date of Birth *</label>
@@ -537,10 +540,11 @@ th {
         <input type="text" id="state">
       </div>
 
-      <div class="form-group">
-        <label>Postcode</label>
-        <input type="text" id="postcode">
-      </div>
+	<div class="form-group">
+  	<label>Postcode *</label>
+  	<input type="text" id="postcode">
+  	<div class="error" id="postcodeError"></div>
+	</div>
     </div>
 
     <div class="form-row">
@@ -566,12 +570,12 @@ th {
       </div>
 
       <div class="form-group">
-        <label>Initiated Name</label>
+        <label id="label_initiatedName">Initiated Name</label>
         <input type="text" id="initiatedName" class="init-field">
       </div>
 
       <div class="form-group">
-        <label>Initiation Status</label>
+        <label id="label_initiationStatus">Initiation Status</label>
 <select id="initiationStatus">
     <option value="First" selected>First</option>
     <option value="Second">Second</option>
@@ -582,12 +586,12 @@ th {
 
     <div class="form-row">
       <div class="form-group">
-        <label>Place of Initiation</label>
+        <label id="label_placeOfInitiation">Place of Initiation</label>
         <input type="text" id="placeOfInitiation" class="init-field">
       </div>
 
       <div class="form-group">
-        <label>Date of Initiation</label>
+        <label id="label_initiationDate">Date of Initiation</label>
         <input type="date" id="initiationDate" class="init-field">
       </div>
 
@@ -598,7 +602,7 @@ th {
     </div>
 
 <div class="form-group">
-  <label>Diksha Guru Name</label>
+  <label id="label_dikshaGuru">Diksha Guru Name</label>
   <input list="dikshaGuruList" id="dikshaGuru" placeholder="<Enter/Select your Guru  Name>" style="max-width:280px;">
   <datalist id="dikshaGuruList">
     <option value="HH Jayapataka Swami ">
@@ -693,6 +697,7 @@ th {
             <option>Male</option>
             <option>Female</option>
             <option>Other</option>
+	    <option>Prefer not to say</option>
           </select>
         </div>
         <div>
@@ -950,39 +955,79 @@ function toTitleCase(str) {
     return `+61 ${cleaned.slice(2,5)} ${cleaned.slice(5,8)} ${cleaned.slice(8)}`;
   }
 
-  /* ------------------------------------------------------------
-     INITIATION FIELDS ENABLE/DISABLE (USER FORM)
-  ------------------------------------------------------------ */
-  const areInitiatedEl = document.getElementById("areInitiated");
-  const initFields = document.querySelectorAll(".init-field");
-  const dikshaGuruEl = document.getElementById("dikshaGuru");
+/* ------------------------------------------------------------
+   INITIATION FIELDS ENABLE/DISABLE (USER FORM)
+------------------------------------------------------------ */
+const areInitiatedEl = document.getElementById("areInitiated");
+const initFields = document.querySelectorAll(".init-field");
+const dikshaGuruEl = document.getElementById("dikshaGuru");
 
-  function updateInitiationFields() {
-    const val = (areInitiatedEl.value || "").toUpperCase();
-    const disabled = (val === "NO");
+function updateInitiationFields() {
+  const val = (areInitiatedEl.value || "").toUpperCase();
+  const disabled = (val === "NO");
 
-    initFields.forEach(el => {
-      el.disabled = disabled;
-      if (disabled) {
-        el.classList.add("disabled-field");
-        el.value = "";
-      } else {
-        el.classList.remove("disabled-field");
-      }
-    });
-
-    if (val === "NO") {
-      dikshaGuruEl.disabled = true;
-      dikshaGuruEl.classList.add("disabled-field");
-      dikshaGuruEl.value = "";
+  // Disable all .init-field elements
+  initFields.forEach(el => {
+    el.disabled = disabled;
+    if (disabled) {
+      el.classList.add("disabled-field");
+      el.value = "";
     } else {
-      dikshaGuruEl.disabled = false;
-      dikshaGuruEl.classList.remove("disabled-field");
+      el.classList.remove("disabled-field");
+    }
+  });
+
+  // Explicitly disable Initiation Status
+  const initiationStatusEl = document.getElementById("initiationStatus");
+  if (initiationStatusEl) {
+    initiationStatusEl.disabled = disabled;
+    if (disabled) {
+      initiationStatusEl.classList.add("disabled-field");
+      initiationStatusEl.value = "";
+    } else {
+      initiationStatusEl.classList.remove("disabled-field");
     }
   }
 
-  areInitiatedEl.addEventListener("change", updateInitiationFields);
-  updateInitiationFields();
+  // Diksha Guru special handling
+  if (disabled) {
+    dikshaGuruEl.disabled = true;
+    dikshaGuruEl.classList.add("disabled-field");
+    dikshaGuruEl.value = "";
+  } else {
+    dikshaGuruEl.disabled = false;
+    dikshaGuruEl.classList.remove("disabled-field");
+  }
+
+  /* ------------------------------------------------------------
+     DYNAMIC ASTERISKS FOR INITIATION FIELDS
+  ------------------------------------------------------------ */
+  const labels = [
+    "label_initiatedName",
+    "label_initiationStatus",
+    "label_placeOfInitiation",
+    "label_initiationDate",
+    "label_dikshaGuru"
+  ];
+
+  labels.forEach(id => {
+    const label = document.getElementById(id);
+    if (!label) return;
+
+    if (disabled) {
+      // Remove asterisk
+      label.innerHTML = label.innerHTML.replace(/\s*\*$/, "");
+    } else {
+      // Add asterisk if missing
+      if (!label.innerHTML.trim().endsWith("*")) {
+        label.innerHTML = label.innerHTML.trim() + " *";
+      }
+    }
+  });
+}
+
+areInitiatedEl.addEventListener("change", updateInitiationFields);
+updateInitiationFields();
 
 
   /* ------------------------------------------------------------
@@ -1052,6 +1097,54 @@ function toTitleCase(str) {
         mobileNumberEl.dataset.normalizedMobile = normalized;
       }
     }
+
+/* GENDER VALIDATION */
+const gender = document.getElementById("gender").value.trim();
+const genderError = document.getElementById("genderError");
+if (!gender) {
+  genderError.textContent = "Gender is required";
+  valid = false;
+} else {
+  genderError.textContent = "";
+}
+
+/* POSTCODE VALIDATION */
+const postcode = document.getElementById("postcode").value.trim();
+const postcodeError = document.getElementById("postcodeError");
+if (!postcode) {
+  postcodeError.textContent = "Postcode is required";
+  valid = false;
+} else {
+  postcodeError.textContent = "";
+}
+
+/* INITIATION MANDATORY VALIDATION (USER FORM) */
+const areInitiatedVal = document.getElementById("areInitiated").value.trim().toUpperCase();
+
+if (areInitiatedVal === "YES") {
+  const initiatedName = document.getElementById("initiatedName").value.trim();
+  const initiationStatus = document.getElementById("initiationStatus").value.trim();
+  const placeOfInitiation = document.getElementById("placeOfInitiation").value.trim();
+  const initiationDate = document.getElementById("initiationDate").value.trim();
+  const dikshaGuru = document.getElementById("dikshaGuru").value.trim();
+
+  if (!initiatedName) {
+    alert("Initiated Name is required when you are initiated.");
+    valid = false;
+  } else if (!initiationStatus) {
+    alert("Initiation Status is required when you are initiated.");
+    valid = false;
+  } else if (!placeOfInitiation) {
+    alert("Place of Initiation is required when you are initiated.");
+    valid = false;
+  } else if (!initiationDate) {
+    alert("Date of Initiation is required when you are initiated.");
+    valid = false;
+  } else if (!dikshaGuru) {
+    alert("Diksha Guru Name is required when you are initiated.");
+    valid = false;
+  }
+}
 
     if (!valid) return;
 
@@ -1595,51 +1688,49 @@ editForm.addEventListener("submit", (e) => {
     return;
   }
 
-  /* -----------------------------
-     MANDATORY: GENDER (EDIT FORM)
-  ----------------------------- */
-  if (!document.getElementById("edit_gender").value.trim()) {
-    alert("Please select Gender.");
+/* MANDATORY: GENDER (EDIT FORM) */
+if (!document.getElementById("edit_gender").value.trim()) {
+  alert("Gender is required.");
+  return;
+}
+
+/* MANDATORY: POSTCODE (EDIT FORM) */
+if (!document.getElementById("edit_postcode").value.trim()) {
+  alert("Postcode is required.");
+  return;
+}
+
+/* INITIATION MANDATORY VALIDATION (ADMIN EDIT FORM) */
+const adminInitiatedVal = document.getElementById("edit_areInitiated").value.trim().toUpperCase();
+
+if (adminInitiatedVal === "YES") {
+  const initiatedName = document.getElementById("edit_initiatedName").value.trim();
+  const initiationStatus = document.getElementById("edit_initiationStatus").value.trim();
+  const placeOfInitiation = document.getElementById("edit_placeOfInitiation").value.trim();
+  const initiationDate = document.getElementById("edit_initiationDate").value.trim();
+  const dikshaGuru = document.getElementById("edit_dikshaGuru").value.trim();
+
+  if (!initiatedName) {
+    alert("Initiated Name is required when the devotee is initiated.");
     return;
   }
-
-  /* -----------------------------
-     MANDATORY: POSTCODE (EDIT FORM)
-  ----------------------------- */
-  if (!document.getElementById("edit_postcode").value.trim()) {
-    alert("Postcode is required.");
+  if (!initiationStatus) {
+    alert("Initiation Status is required when the devotee is initiated.");
     return;
   }
-
-  /* -----------------------------
-     INITIATION VALIDATION (EDIT FORM)
-  ----------------------------- */
-  const initiated = document.getElementById("edit_areInitiated").value.trim();
-
-  if (initiated === "YES") {
-
-    if (!document.getElementById("edit_initiatedName").value.trim()) {
-      alert("Initiated Name is required.");
-      return;
-    }
-
-    if (!document.getElementById("edit_initiationStatus").value.trim()) {
-      alert("Initiation Status is required.");
-      return;
-    }
-
-    if (!document.getElementById("edit_placeOfInitiation").value.trim()) {
-      alert("Place of Initiation is required.");
-      return;
-    }
-
-    if (!document.getElementById("edit_initiationDate").value.trim()) {
-      alert("Initiation Date is required.");
-      return;
-    }
-
-    // Siksha Guru is optional — do NOT validate it
+  if (!placeOfInitiation) {
+    alert("Place of Initiation is required when the devotee is initiated.");
+    return;
   }
+  if (!initiationDate) {
+    alert("Date of Initiation is required when the devotee is initiated.");
+    return;
+  }
+  if (!dikshaGuru) {
+    alert("Diksha Guru Name is required when the devotee is initiated.");
+    return;
+  }
+}
 
   /* -----------------------------
      DUPLICATE CHECK
